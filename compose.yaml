@@ -43,19 +43,6 @@ services:
     networks:
       - kafka-net
 
-  order-service:
-    build:
-      context: ./order-service
-    container_name: order-service
-    ports:
-      - "8081:8081"
-    environment:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-    depends_on:
-      - kafka
-    networks:
-      - kafka-net
-
 networks:
   kafka-net:
     driver: bridge
