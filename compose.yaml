@@ -16,9 +16,9 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: ec2a:2888:3888;ec2b:2888:3888;ec2c:2888:3888
     extra_hosts:
-      - "ec2a:43.200.90.54"
-      - "ec2b:43.200.160.92"
-      - "ec2c:3.34.73.34"
+      - "ec2a:172.31.4.9"
+      - "ec2b:172.31.4.226"
+      - "ec2c:172.31.35.57"
     networks:
       - kafka-net
 
@@ -32,16 +32,16 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: ec2a:2181,ec2b:2181,ec2c:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://43.200.90.54:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://172.31.4.9:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
     depends_on:
       - zookeeper
     extra_hosts:
-      - "ec2a:43.200.90.54"
-      - "ec2b:43.200.160.92"
-      - "ec2c:3.34.73.34"
+      - "ec2a:172.31.4.9"
+      - "ec2b:172.31.4.226"
+      - "ec2c:172.31.35.57"
     networks:
       - kafka-net
 
@@ -52,14 +52,14 @@ services:
       - "8080:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: cluster
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 43.200.90.54:9092,43.200.160.92:9092,3.34.73.34:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 172.31.4.9:9092,172.31.4.226:9092,172.31.35.57:9092
       KAFKA_CLUSTERS_0_ZOOKEEPER: ec2a:2181,ec2b:2181,ec2c:2181
     depends_on:
       - kafka
     extra_hosts:
-      - "ec2a:43.200.90.54"
-      - "ec2b:43.200.160.92"
-      - "ec2c:3.34.73.34"
+      - "ec2a:172.31.4.9"
+      - "ec2b:172.31.4.226"
+      - "ec2c:172.31.35.57"
     networks:
       - kafka-net
 
