@@ -1,12 +1,24 @@
+version: '3.8'
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: zookeeper
     ports:
       - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
     environment:
+      ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: ec2a:2888:3888;ec2b:2888:3888;ec2c:2888:3888
+    extra_hosts:
+      - "ec2a:43.200.90.54"
+      - "ec2b:43.200.160.92"
+      - "ec2c:3.34.73.34"
     networks:
       - kafka-net
 
@@ -17,15 +29,19 @@ services:
       - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: ec2a:2181,ec2b:2181,ec2c:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://43.200.90.54:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
     depends_on:
       - zookeeper
+    extra_hosts:
+      - "ec2a:43.200.90.54"
+      - "ec2b:43.200.160.92"
+      - "ec2c:3.34.73.34"
     networks:
       - kafka-net
 
@@ -35,11 +51,15 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=43.200.90.54:9092
-      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+      KAFKA_CLUSTERS_0_NAME: cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 43.200.90.54:9092,43.200.160.92:9092,3.34.73.34:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: ec2a:2181,ec2b:2181,ec2c:2181
     depends_on:
       - kafka
+    extra_hosts:
+      - "ec2a:43.200.90.54"
+      - "ec2b:43.200.160.92"
+      - "ec2c:3.34.73.34"
     networks:
       - kafka-net
 
