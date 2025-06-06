@@ -80,6 +80,18 @@ services:
     networks:
     - kafka-net
 
+  kafka-lag-exporter:
+    image: lightbend/kafka-lag-exporter:latest
+    container_name: kafka-lag-exporter
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./application.conf:/opt/docker/conf/application.conf
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+
 networks:
   kafka-net:
     driver: bridge
