@@ -78,7 +78,7 @@ services:
     depends_on:
       - kafka
     networks:
-    - kafka-net
+      - kafka-net
 
   kafka-lag-exporter:
     image: seglo/kafka-lag-exporter:0.6.9
@@ -91,10 +91,6 @@ services:
       - kafka
     networks:
       - kafka-net
-
-networks:
-  kafka-net:
-    driver: bridge
 
   prometheus:
     image: prom/prometheus:latest
@@ -117,3 +113,7 @@ networks:
       - prometheus
     networks:
       - kafka-net
+
+networks:
+  kafka-net:
+    driver: bridge
