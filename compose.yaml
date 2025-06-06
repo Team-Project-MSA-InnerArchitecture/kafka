@@ -29,7 +29,7 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
-      - KAFKA_CLUSTERS_0_KAFKACONNECT=http://kafka-connect:8083
+      - KAFKA_CLUSTERS_0_KAFKACONNECT=[{"name":"connect","address":"http://kafka-connect:8083"}]
       - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://schema-registry:8081
     depends_on:
       - kafka
