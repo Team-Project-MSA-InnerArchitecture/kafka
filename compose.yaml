@@ -81,7 +81,7 @@ services:
     - kafka-net
 
   kafka-lag-exporter:
-    image: lightbend/kafka-lag-exporter:0.6.9
+    image: ghcr.io/lightbend/kafka-lag-exporter:0.6.9
     container_name: kafka-lag-exporter
     ports:
       - "8000:8000"
