@@ -10,9 +10,9 @@ services:
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://43.200.90.54:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL_PUBLIC:PLAINTEXT,EXTERNAL_PRIVATE:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,EXTERNAL_PUBLIC://0.0.0.0:9092,EXTERNAL_PRIVATE://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL_PUBLIC://43.200.90.54:9092,EXTERNAL_PRIVATE://172.31.4.9:9094
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
@@ -21,23 +21,7 @@ services:
     networks:
       - kafka-net
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
-    ports:
-      - "8080:8080"
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
-      - KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME=connect
-      - KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS=http://kafka-connect:8083
-      - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://schema-registry:8081
-    depends_on:
-      - kafka
-      - schema-registry
-      - kafka-connect
-    networks:
-      - kafka-net
+
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect:7.6.0
@@ -77,40 +61,6 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:29092
     depends_on:
       - kafka
-    networks:
-      - kafka-net
-
-  kafka-lag-exporter:
-    image: seglo/kafka-lag-exporter:0.6.9
-    container_name: kafka-lag-exporter
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./application.conf:/opt/docker/conf/application.conf
-    depends_on:
-      - kafka
-    networks:
-      - kafka-net
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    depends_on:
-      - kafka-lag-exporter
-    networks:
-      - kafka-net
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    depends_on:
-      - prometheus
     networks:
       - kafka-net
 
